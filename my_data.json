@@ -1,8 +1,6 @@
 
 {
-    "portfolio": {
-        "IBM": 100,
-        "MSFT": 10
-},
+    "portfolio": {},
+
     "balance": 100000.0
 }
