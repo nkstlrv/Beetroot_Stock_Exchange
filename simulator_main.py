@@ -39,10 +39,13 @@ class Exchange:
         ...
 
 
-ex_1 = Exchange(r"Data\my_data.json")
+if __name__ == "__main__":
 
-print(ex_1.get_price("GOOGL"))
-print(ex_1.get_price("AAPL"))
-print(ex_1.get_price("TSLA"))
-print(ex_1.get_price("MSFT"))
+    ex_1 = Exchange(r"Data\my_data.json")
+
+    print(ex_1.get_price("GOOGL"))
+    print(ex_1.get_price("AAPL"))
+    print(ex_1.get_price("TSLA"))
+    print(ex_1.get_price("MSFT"))
+    print(ex_1.get_price("Non Existing Ticker"))
 
