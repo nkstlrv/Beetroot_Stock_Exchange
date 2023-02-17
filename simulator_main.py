@@ -1,28 +1,20 @@
 from time import sleep
-
 import yfinance as yf
-
-# mydata.json
-# {
-#     "portfolio": {
-#         "IBM": 100,
-#         "MSFT": 10
-# },
-#     "balance": 100000.0
-# }
 
 
 class Exchange:
     def __init__(self, path_to_file):
         self.path_to_file = path_to_file
         self.data = self.load_data()
-        self.portfolio = self.data["portfolio"]
-        self.balance = self.data["balance"]
+        # self.portfolio = self.data["portfolio"]
+        # self.balance = self.data["balance"]
 
     @staticmethod
-    def get_price(ticker: str) -> float:
-        # return yf.Ticker(ticker).fast_info["lastPrice"]
-        pass
+    def get_price(ticker: str):
+        ticker_yahoo = yf.Ticker(ticker)
+        data = ticker_yahoo.history()
+        last_quote = data['Close'].iloc[-1]
+        return f"Market price for {ticker} --> $ {round(last_quote, 2)}"
 
     def sell(self, ticker: str, amount: int):
         pass
@@ -47,13 +39,10 @@ class Exchange:
         ...
 
 
-ex = Exchange("mydata.json")
+ex_1 = Exchange(r"Data\my_data.json")
 
-ex.buy("MSFT", 10)
-sleep(10)
-ex.buy("IBM", 15)
-sleep(30)
-ex.sell("MSFT", 5)
-ex.sell("IBM", 15)
+print(ex_1.get_price("GOOGL"))
+print(ex_1.get_price("AAPL"))
+print(ex_1.get_price("TSLA"))
+print(ex_1.get_price("MSFT"))
 
-print(ex)
