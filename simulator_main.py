@@ -46,8 +46,8 @@ class Exchange:
             print(my_data)
 
         # Loading data to JSON
-        with open(r"Data/my_data.json", "w") as outfile:
-            json.dump(my_data, outfile)
+        with open(r"Data/my_data.json", "w") as f_2:
+            json.dump(my_data, f_2)
 
     def load_data(self) -> dict:
         pass
