@@ -68,7 +68,7 @@ class Exchange:
 if __name__ == "__main__":
     ex_1 = Exchange(r"Data\my_data.json")
 
-# ex_1.buy("aapl", 33)
-# ex_1.buy("aapl", 4)
-# ex_1.buy("msft", 4)
-# ex_1.buy("googl", 100000)
+    # ex_1.buy("aapl", 33)
+    # ex_1.buy("aapl", 4)
+    # ex_1.buy("msft", 4)
+    # ex_1.buy("googl", 100000)
