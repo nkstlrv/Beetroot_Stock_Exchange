@@ -1,4 +1,5 @@
 from time import sleep
+import json
 import yfinance as yf
 
 
@@ -11,16 +12,41 @@ class Exchange:
 
     @staticmethod
     def get_price(ticker: str):
-        ticker_yahoo = yf.Ticker(ticker)
-        data = ticker_yahoo.history()
-        last_quote = data['Close'].iloc[-1]
-        return f"Market price for {ticker} --> $ {round(last_quote, 2)}"
+        return round(yf.Ticker(ticker).fast_info["lastPrice"], 2)
 
     def sell(self, ticker: str, amount: int):
         pass
 
     def buy(self, ticker: str, amount: int):
-        pass
+
+        # Calculating the cost of transaction
+        try:
+            ticker_price = self.get_price(ticker.upper())
+            transaction_cost = ticker_price * amount
+            print(f"You have bought {ticker.upper()} for ${round(transaction_cost, 3)}")
+        except KeyError:
+            print("You are trying to buy non-existing ticker")
+
+        # Opening JSON
+        with open(self.path_to_file, "r+") as f_1:
+            my_data = json.load(f_1)
+
+        # Storing our transaction
+
+        if my_data['balance'] - transaction_cost < 0:
+            raise ValueError("Not enough funds on the account ")
+        else:
+
+            portfolio = my_data.get('portfolio')
+            if portfolio.get(ticker.upper()) is None:
+                my_data['portfolio'].update({ticker.upper(): amount})
+            else:
+                my_data['portfolio'][ticker.upper()] += amount
+            my_data['balance'] -= transaction_cost
+
+        # Loading data to JSON
+        with open(self.path_to_file, "w") as f_2:
+            json.dump(my_data, f_2)
 
     def load_data(self) -> dict:
         pass
@@ -40,12 +66,10 @@ class Exchange:
 
 
 if __name__ == "__main__":
-
     ex_1 = Exchange(r"Data\my_data.json")
 
-    print(ex_1.get_price("GOOGL"))
-    print(ex_1.get_price("AAPL"))
-    print(ex_1.get_price("TSLA"))
-    print(ex_1.get_price("MSFT"))
-    print(ex_1.get_price("Non Existing Ticker"))
 
+ex_1.buy("aapl", 33)
+ex_1.buy("aapl", 4)
+ex_1.buy("msft", 4)
+# ex_1.buy("googl", 100000)
