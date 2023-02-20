@@ -23,12 +23,12 @@ class Exchange:
         try:
             ticker_price = self.get_price(ticker.upper())
             transaction_cost = ticker_price * amount
-            print(f"You have bought {ticker} for ${round(transaction_cost, 3)}")
+            print(f"You have bought {ticker.upper()} for ${round(transaction_cost, 3)}")
         except KeyError:
             print("You are trying to buy non-existing ticker")
 
         # Opening JSON
-        with open(r"Data/my_data.json", "r+") as f_1:
+        with open(self.path_to_file, "r+") as f_1:
             my_data = json.load(f_1)
 
         # Storing our transaction
@@ -43,10 +43,9 @@ class Exchange:
             else:
                 my_data['portfolio'][ticker.upper()] += amount
             my_data['balance'] -= transaction_cost
-            print(my_data)
 
         # Loading data to JSON
-        with open(r"Data/my_data.json", "w") as f_2:
+        with open(self.path_to_file, "w") as f_2:
             json.dump(my_data, f_2)
 
     def load_data(self) -> dict:
@@ -69,9 +68,8 @@ class Exchange:
 if __name__ == "__main__":
     ex_1 = Exchange(r"Data\my_data.json")
 
-    # print(ex_1.get_price("GOOGL"))
-    # print(ex_1.get_price("AAPL"))
-    # print(ex_1.get_price("TSLA"))
-    # print(ex_1.get_price("MSFT"))
 
 ex_1.buy("aapl", 33)
+ex_1.buy("aapl", 4)
+ex_1.buy("msft", 4)
+# ex_1.buy("googl", 100000)
