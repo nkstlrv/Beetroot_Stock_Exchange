@@ -17,7 +17,12 @@ class Exchange:
         pass
 
     def buy(self, ticker: str, amount: int):
-        pass
+        try:
+            ticker_price = self.get_price(ticker)
+            transaction_cost = ticker_price * amount
+            print(f"You have bought {ticker} for ${round(transaction_cost, 3)}")
+        except KeyError:
+            print("You are trying to buy non-existing ticker")
 
     def load_data(self) -> dict:
         pass
@@ -40,9 +45,10 @@ if __name__ == "__main__":
 
     ex_1 = Exchange(r"Data\my_data.json")
 
-    print(ex_1.get_price("GOOGL"))
-    print(ex_1.get_price("AAPL"))
-    print(ex_1.get_price("TSLA"))
-    print(ex_1.get_price("MSFT"))
-    print(ex_1.get_price("Non Existing Ticker"))
+    # print(ex_1.get_price("GOOGL"))
+    # print(ex_1.get_price("AAPL"))
+    # print(ex_1.get_price("TSLA"))
+    # print(ex_1.get_price("MSFT"))
+
+ex_1.buy("ddsdsf", 3)
 
