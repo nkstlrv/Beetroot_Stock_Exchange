@@ -11,10 +11,7 @@ class Exchange:
 
     @staticmethod
     def get_price(ticker: str):
-        ticker_yahoo = yf.Ticker(ticker)
-        data = ticker_yahoo.history()
-        last_quote = data['Close'].iloc[-1]
-        return f"Market price for {ticker} --> $ {round(last_quote, 2)}"
+        return round(yf.Ticker(ticker).fast_info["lastPrice"], 2)
 
     def sell(self, ticker: str, amount: int):
         pass
