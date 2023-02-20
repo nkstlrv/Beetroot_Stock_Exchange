@@ -1,4 +1,5 @@
 from time import sleep
+import json
 import yfinance as yf
 
 
@@ -17,12 +18,36 @@ class Exchange:
         pass
 
     def buy(self, ticker: str, amount: int):
+
+        # Calculating the cost of transaction
         try:
-            ticker_price = self.get_price(ticker)
+            ticker_price = self.get_price(ticker.upper())
             transaction_cost = ticker_price * amount
             print(f"You have bought {ticker} for ${round(transaction_cost, 3)}")
         except KeyError:
             print("You are trying to buy non-existing ticker")
+
+        # Opening JSON
+        with open(r"Data/my_data.json", "r+") as f_1:
+            my_data = json.load(f_1)
+
+        # Storing our transaction
+
+        if my_data['balance'] - transaction_cost < 0:
+            raise ValueError("Not enough funds on the account ")
+        else:
+
+            portfolio = my_data.get('portfolio')
+            if portfolio.get(ticker.upper()) is None:
+                my_data['portfolio'].update({ticker.upper(): amount})
+            else:
+                my_data['portfolio'][ticker.upper()] += amount
+            my_data['balance'] -= transaction_cost
+            print(my_data)
+
+        # Loading data to JSON
+        with open(r"Data/my_data.json", "w") as outfile:
+            json.dump(my_data, outfile)
 
     def load_data(self) -> dict:
         pass
@@ -42,7 +67,6 @@ class Exchange:
 
 
 if __name__ == "__main__":
-
     ex_1 = Exchange(r"Data\my_data.json")
 
     # print(ex_1.get_price("GOOGL"))
@@ -50,5 +74,4 @@ if __name__ == "__main__":
     # print(ex_1.get_price("TSLA"))
     # print(ex_1.get_price("MSFT"))
 
-ex_1.buy("ddsdsf", 3)
-
+ex_1.buy("aapl", 33)
