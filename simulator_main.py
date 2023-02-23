@@ -26,6 +26,7 @@ class Exchange:
             print(f"You have bought {ticker.upper()} for ${round(transaction_cost, 3)}")
         except KeyError:
             print("You are trying to buy non-existing ticker")
+            quit()
 
         # Opening JSON
         with open(self.path_to_file, "r+") as f_1:
@@ -61,14 +62,26 @@ class Exchange:
         pass
 
     def __str__(self):
-        """Print balance and portfolio"""
-        ...
+        with open(self.path_to_file, "r") as jf:        # Without Load method yet
+            data = json.load(jf)
+
+            info = f"{'=' * 35}" \
+                   f"\nYour Portfolio & Balance:" \
+                   f"\n Funds available --> {round(data['balance'], 3)} USD" \
+                   f"\n ticker --> amount"
+
+            for k, v in data['portfolio'].items():
+                info += f"\n   {k} --> {v}"
+            info += f"\n{'=' * 35}"
+            return info
 
 
 if __name__ == "__main__":
     ex_1 = Exchange(r"Data\my_data.json")
 
-    # ex_1.buy("aapl", 33)
-    # ex_1.buy("aapl", 4)
-    # ex_1.buy("msft", 4)
+    ex_1.buy("aapl", 33)
+    ex_1.buy("aapl", 4)
+    ex_1.buy("msft", 4)
     # ex_1.buy("googl", 100000)
+
+    print(ex_1)
