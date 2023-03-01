@@ -8,12 +8,14 @@ class Exchange:
         self.data = self.load_data()
         self.portfolio = self.data["portfolio"]
 
+
     @staticmethod
     def get_price(ticker: str):
         try:
             return yf.Ticker(ticker).fast_info["lastPrice"]
         except KeyError:
             raise KeyError("You are trying to find a non-existing ticker")
+
 
     def sell(self, ticker: str, amount: int):
         ticker = ticker.upper()
@@ -35,55 +37,65 @@ class Exchange:
         print("Successful SELL transaction")
         return True
 
-    def buy(self, ticker: str, amount: int):
+
+    def buy(self, ticker: str, buy_amount: int):
         ticker = ticker.upper()
-        amount = int(amount)
+        buy_amount = int(buy_amount)
 
         # Calculating the transaction cost
         try:
-            transaction_cost = self.get_price(ticker) * amount
+            buy_transaction_cost = self.get_price(ticker) * buy_amount
         except KeyError:
             print("You are trying to buy a non-existing ticker")
             return False
 
         # Checking if you can afford it
-        if self.data['balance'] - transaction_cost < 0:
-            print("You can not afford it")
+        if self.data['balance'] - buy_transaction_cost < 0:
+            print("Not enough balance")
             return False
 
         # If everything is OK performing the transaction
         if ticker in self.portfolio.keys():
-            self.portfolio[ticker] += amount
+            self.portfolio[ticker] += buy_amount
         else:
-            self.portfolio[ticker] = amount
-        self.data['balance'] -= round(transaction_cost, 3)
+            self.portfolio[ticker] = buy_amount
+        self.data['balance'] -= round(buy_transaction_cost, 3)
         self.save_data()
         print("Successful BUY transaction")
         return True
+
 
     def load_data(self) -> dict:
         with open(self.path_to_file, "r+") as ld:
             my_data = json.load(ld)
             return my_data
 
+
     def save_data(self):
         with open(self.path_to_file, "w") as sd:
             json.dump(self.data, sd)
 
+
+    # Don't actually know how to use this validate method
     def valid_balance(self, amount: int):
         pass
 
+
+    # The same for this one
     def valid_ticker_balance(self, ticker: str, amount: int):
         pass
 
+
     def __str__(self):
         info = f"{'=' * 35}" \
-                f"\nYour Portfolio & Balance:" \
-                f"\n Funds available --> {round(self.data['balance'], 3)} USD" \
-                f"\n ticker --> amount"
+                f"\n\t\tPORTFOLIO & BALANCE\n" \
+               f"{'=' * 35}" \
+                f"\n Balance --> {round(self.data['balance'], 3)} USD\n" \
+               f"{'-' * 25}" \
+                f"\n Portfolio:\n" \
+               f"{'-' * 25}"
         for k, v in self.portfolio.items():
-            info += f"\n   {k} --> {v}"
-        info += f"\n{'=' * 35}"
+            info += f"\n{k} --> {v}"
         return info
 
 
