@@ -1,4 +1,3 @@
-from time import sleep
 import json
 import yfinance as yf
 
@@ -18,7 +17,25 @@ class Exchange:
             raise KeyError("You are trying to find a non-existing ticker")
 
     def sell(self, ticker: str, amount: int):
-        pass
+        ticker = ticker.upper()
+        amount = int(amount)
+
+        # Checking if enough tickers in portfolio
+        if ticker not in self.portfolio:
+            print("You do not have this ticker")
+            return False
+        elif self.portfolio[ticker] < amount:
+            print("Not enough tickers")
+            return False
+
+        # If OK performing the transaction
+        sell_transaction = self.get_price(ticker) * amount
+        self.portfolio[ticker] -= amount
+        self.data['balance'] += round(sell_transaction, 3)
+        self.save_data()
+        print("Successful SELL transaction")
+        return True
+
 
     def buy(self, ticker: str, amount: int):
         ticker = ticker.upper()
@@ -28,11 +45,13 @@ class Exchange:
         try:
             transaction_cost = self.get_price(ticker) * amount
         except KeyError:
-            return "You are trying to buy a non-existing ticker"
+            print("You are trying to buy a non-existing ticker")
+            return False
 
         # Checking if you can afford it
         if self.balance - transaction_cost < 0:
-            raise ValueError("You can not afford it")
+            print("You can not afford it")
+            return False
 
         # If everything is OK performing the transaction
         if ticker in self.portfolio.keys():
@@ -41,6 +60,7 @@ class Exchange:
             self.portfolio[ticker] = amount
         self.data['balance'] -= round(transaction_cost, 3)
         self.save_data()
+        print("Successful BUY transaction")
         return True
 
     def load_data(self) -> dict:
@@ -71,9 +91,7 @@ class Exchange:
 
 if __name__ == "__main__":
     ex_1 = Exchange(r"Data\my_data.json")
-    ex_1.buy("msft", 2)
-    ex_1.buy("aapl", 2)
-    print(ex_1.data)
+
 
 
 
