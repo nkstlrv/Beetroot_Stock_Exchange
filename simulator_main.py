@@ -79,7 +79,7 @@ class Exchange:
     def __str__(self):
         info = f"{'=' * 35}" \
                 f"\nYour Portfolio & Balance:" \
-                f"\n Funds available --> {round(self.balance, 3)} USD" \
+                f"\n Funds available --> {round(self.data['balance'], 3)} USD" \
                 f"\n ticker --> amount"
         for k, v in self.portfolio.items():
             info += f"\n   {k} --> {v}"
@@ -89,6 +89,7 @@ class Exchange:
 
 if __name__ == "__main__":
     ex_1 = Exchange(r"Data\my_data.json")
+    print(ex_1)
 
 
 
