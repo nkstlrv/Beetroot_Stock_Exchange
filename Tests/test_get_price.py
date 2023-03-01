@@ -2,31 +2,35 @@ from simulator_main import Exchange
 import pytest
 
 
-# This fixture creates an instance of the Exchange class
 @pytest.fixture
-def create_exchange_class():
-    return Exchange(r"Data\my_data.json")
+def exchange_class():
+    return Exchange(r"demo_test_data.json")
 
 
-# Testing get_price method
-def test_get_price_of_real_tickers(create_exchange_class):
+def test_get_price(exchange_class):
+    assert isinstance(exchange_class.get_price('aapl'), float)
+    assert isinstance(exchange_class.get_price('AAPL'), float)
+    assert isinstance(exchange_class.get_price('msft'), float)
+    assert isinstance(exchange_class.get_price('MSFT'), float)
+    assert isinstance(exchange_class.get_price('googl'), float)
+    assert isinstance(exchange_class.get_price('GOOGL'), float)
+    assert isinstance(exchange_class.get_price('tsla'), float)
+    assert isinstance(exchange_class.get_price('TSLA'), float)
 
-    assert isinstance(create_exchange_class.get_price("GOOGL"), float) is True
 
-    assert isinstance(create_exchange_class.get_price("MSFT"), float) is True
+def test_get_price_non_existing_ticker(exchange_class):
+    with pytest.raises(KeyError) as ke:
+        exchange_class.get_price('non_existing_ticker')
+    assert "'You are trying to find a non-existing ticker'" == str(ke.value)
 
-    assert isinstance(create_exchange_class.get_price("AAPL"), float) is True
+    with pytest.raises(KeyError) as ke:
+        exchange_class.get_price('another_non_existing_ticker')
+    assert "'You are trying to find a non-existing ticker'" == str(ke.value)
 
+    with pytest.raises(KeyError) as ke:
+        exchange_class.get_price('and_one_more_non_existing_ticker')
+    assert "'You are trying to find a non-existing ticker'" == str(ke.value)
 
-# Testing raising error if ticker doesn't exist
-def test_get_price_of_nonexisting_ticker(create_exchange_class):
-
-    with pytest.raises(KeyError) as ex_info:
-
-        create_exchange_class.get_price("Non Existing Ticker")
-        create_exchange_class.get_price("Another non Existing Ticker")
-        create_exchange_class.get_price("")
-        create_exchange_class.get_price("1234")
-
-    assert "'currentTradingPeriod'" == str(ex_info.value)
-
+    with pytest.raises(KeyError) as ke:
+        exchange_class.get_price('')
+    assert "'You are trying to find a non-existing ticker'" == str(ke.value)
