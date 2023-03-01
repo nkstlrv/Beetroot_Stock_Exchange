@@ -7,52 +7,50 @@ class Exchange:
     def __init__(self, path_to_file):
         self.path_to_file = path_to_file
         self.data = self.load_data()
-        # self.portfolio = self.data["portfolio"]
-        # self.balance = self.data["balance"]
+        self.portfolio = self.data["portfolio"]
+        self.balance = self.data["balance"]
 
     @staticmethod
     def get_price(ticker: str):
-        return round(yf.Ticker(ticker).fast_info["lastPrice"], 2)
+        try:
+            return yf.Ticker(ticker).fast_info["lastPrice"]
+        except KeyError:
+            raise KeyError("You are trying to find a non-existing ticker")
 
     def sell(self, ticker: str, amount: int):
         pass
 
     def buy(self, ticker: str, amount: int):
+        ticker = ticker.upper()
+        amount = int(amount)
 
-        # Calculating the cost of transaction
+        # Calculating the transaction cost
         try:
-            ticker_price = self.get_price(ticker.upper())
-            transaction_cost = ticker_price * amount
-            print(f"You have bought {ticker.upper()} for ${round(transaction_cost, 3)}")
+            transaction_cost = self.get_price(ticker) * amount
         except KeyError:
-            print("You are trying to buy non-existing ticker")
+            return "You are trying to buy a non-existing ticker"
 
-        # Opening JSON
-        with open(self.path_to_file, "r+") as f_1:
-            my_data = json.load(f_1)
+        # Checking if you can afford it
+        if self.balance - transaction_cost < 0:
+            raise ValueError("You can not afford it")
 
-        # Storing our transaction
-
-        if my_data['balance'] - transaction_cost < 0:
-            raise ValueError("Not enough funds on the account ")
+        # If everything is OK performing the transaction
+        if ticker in self.portfolio.keys():
+            self.portfolio[ticker] += amount
         else:
-
-            portfolio = my_data.get('portfolio')
-            if portfolio.get(ticker.upper()) is None:
-                my_data['portfolio'].update({ticker.upper(): amount})
-            else:
-                my_data['portfolio'][ticker.upper()] += amount
-            my_data['balance'] -= transaction_cost
-
-        # Loading data to JSON
-        with open(self.path_to_file, "w") as f_2:
-            json.dump(my_data, f_2)
+            self.portfolio[ticker] = amount
+        self.data['balance'] -= round(transaction_cost, 3)
+        self.save_data()
+        return True
 
     def load_data(self) -> dict:
-        pass
+        with open(self.path_to_file, "r+") as ld:
+            my_data = json.load(ld)
+            return my_data
 
     def save_data(self):
-        pass
+        with open(self.path_to_file, "w") as sd:
+            json.dump(self.data, sd)
 
     def valid_balance(self, amount: int):
         pass
@@ -61,14 +59,21 @@ class Exchange:
         pass
 
     def __str__(self):
-        """Print balance and portfolio"""
-        ...
+        info = f"{'=' * 35}" \
+                f"\nYour Portfolio & Balance:" \
+                f"\n Funds available --> {round(self.balance, 3)} USD" \
+                f"\n ticker --> amount"
+        for k, v in self.portfolio.items():
+            info += f"\n   {k} --> {v}"
+        info += f"\n{'=' * 35}"
+        return info
 
 
 if __name__ == "__main__":
     ex_1 = Exchange(r"Data\my_data.json")
+    ex_1.buy("msft", 2)
+    ex_1.buy("aapl", 2)
+    print(ex_1.data)
 
-    # ex_1.buy("aapl", 33)
-    # ex_1.buy("aapl", 4)
-    # ex_1.buy("msft", 4)
-    # ex_1.buy("googl", 100000)
+
+
