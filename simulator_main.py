@@ -7,7 +7,6 @@ class Exchange:
         self.path_to_file = path_to_file
         self.data = self.load_data()
         self.portfolio = self.data["portfolio"]
-        self.balance = self.data["balance"]
 
     @staticmethod
     def get_price(ticker: str):
@@ -36,7 +35,6 @@ class Exchange:
         print("Successful SELL transaction")
         return True
 
-
     def buy(self, ticker: str, amount: int):
         ticker = ticker.upper()
         amount = int(amount)
@@ -49,7 +47,7 @@ class Exchange:
             return False
 
         # Checking if you can afford it
-        if self.balance - transaction_cost < 0:
+        if self.data['balance'] - transaction_cost < 0:
             print("You can not afford it")
             return False
 
